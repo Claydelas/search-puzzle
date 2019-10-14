@@ -3,16 +3,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/**
- * basic breadth first search in java
- */
 public class BreadthFirstSearch {
 
     public BreadthFirstSearch(Node start, State goal) {
         int nodesExpanded = 0;
         Queue<Node> queue = new LinkedList<Node>();
 
-        System.out.println("Starting Breadth-First Search on:\n");
+        System.out.println("Starting state:");
         start.getState().showWorldState();
         queue.add(start);
         while (!queue.isEmpty()) {
@@ -22,7 +19,7 @@ public class BreadthFirstSearch {
             //Check if the solution is found
             if (Arrays.deepEquals(current.getState().getWorld(), goal.getWorld())) {
                 ArrayList<Node> steps = current.sequence(current);
-                System.out.println("Finished Breadth-First Search with depth : " + current.getCost() + " and nodes expanded : " + nodesExpanded);
+                System.out.println("Breadth-First search found solution on depth: [" + current.getLevel() + "] with [" + nodesExpanded + "] nodes expanded:");
                 current.getState().showWorldState();
                 System.out.println("Steps:");
                 for (Node step : steps) {

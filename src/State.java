@@ -67,69 +67,69 @@ public class State {
 
     State moveLeft() {
         Tile[][] world = cloneWorld(this.world);
-        System.out.print("+left");
+        //System.out.print("+left");
         if (agentY - 1 >= 0) {
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX][agentY - 1];
             world[agentX][agentY - 1] = oldAgentPos;
-            System.out.println();
+            //System.out.println();
         } else {
-            System.out.println(" => out of bounds!");
-            showWorldState();
+            //System.out.println(" => out of bounds!");
+            //showWorldState();
             return this;
         }
-        showWorldState(world);
+        //showWorldState(world);
         return new State(world, agentX, agentY - 1);
     }
 
     State moveRight() {
         Tile[][] world = cloneWorld(this.world);
-        System.out.print("+right");
+        //System.out.print("+right");
         if (agentY + 1 < world[agentX].length) {
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX][agentY + 1];
             world[agentX][agentY + 1] = oldAgentPos;
-            System.out.println();
+            //System.out.println();
         } else {
-            System.out.println(" => out of bounds!");
-            showWorldState();
+            //System.out.println(" => out of bounds!");
+            //showWorldState();
             return this;
         }
-        showWorldState(world);
+        //showWorldState(world);
         return new State(world, agentX, agentY + 1);
     }
 
     State moveDown() {
         Tile[][] world = cloneWorld(this.world);
-        System.out.print("+down");
+        //System.out.print("+down");
         if (agentX + 1 < world[agentY].length) {
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX + 1][agentY];
             world[agentX + 1][agentY] = oldAgentPos;
-            System.out.println();
+            //System.out.println();
         } else {
-            System.out.println(" => out of bounds!");
-            showWorldState();
+            //System.out.println(" => out of bounds!");
+            //showWorldState();
             return this;
         }
-        showWorldState(world);
+        //showWorldState(world);
         return new State(world, agentX + 1, agentY);
     }
 
     State moveUp() {
         Tile[][] world = cloneWorld(this.world);
-        System.out.print("+up");
+        //System.out.print("+up");
         if (agentX - 1 >= 0) {
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX - 1][agentY];
             world[agentX - 1][agentY] = oldAgentPos;
-            System.out.println();
+            //System.out.println();
         } else {
-            System.out.println(" => out of bounds!");
-            showWorldState();
+            //System.out.println(" => out of bounds!");
+            //showWorldState();
             return this;
         }
-        showWorldState(world);
+        //showWorldState(world);
         return new State(world, agentX - 1, agentY);
     }
 
@@ -139,6 +139,7 @@ public class State {
             System.out.println();
         }
     }
+
     void showWorldState(Tile[][] state) {
         for (Tile[] tiles : state) {
             Arrays.asList(tiles).forEach(tile -> System.out.print(tile.label));

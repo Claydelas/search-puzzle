@@ -26,7 +26,7 @@ public class Tile {
         if (obj == null) return false;
         if (!Tile.class.isAssignableFrom(obj.getClass())) return false;
         final Tile other = (Tile) obj;
-        return this.label.equals(other.label) && this.type.equals(other.type);
+        return this.label.equals(other.label) || this.type == Type.AGENT || other.type == Type.AGENT;
     }
 
     enum Type {
