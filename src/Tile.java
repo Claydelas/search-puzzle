@@ -3,11 +3,6 @@ public class Tile {
     Type type;
     String label;
 
-    public Tile() {
-        this.label = "[ ]";
-        this.type = Type.EMPTY_TILE;
-    }
-
     public Tile(Type type) {
         if (type == Type.AGENT)
             this.label = "[#]";
@@ -26,17 +21,17 @@ public class Tile {
         this.type = type;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!Tile.class.isAssignableFrom(obj.getClass())) return false;
+        final Tile other = (Tile) obj;
+        return this.label.equals(other.label) && this.type.equals(other.type);
+    }
+
     enum Type {
         AGENT,
         EMPTY_TILE,
         BLOCK,
     }
-
-}
-
-class Agent extends Tile {
-    public Agent() {
-        super(Type.AGENT);
-    }
-    
 }
