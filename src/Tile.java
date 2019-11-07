@@ -1,7 +1,7 @@
 public class Tile {
 
-    Type type;
-    String label;
+    private Type type;
+    private String label;
 
     public Tile(Type type) {
         if (type == Type.AGENT)
@@ -19,6 +19,18 @@ public class Tile {
         else
             this.label = "[" + label + "]";
         this.type = type;
+    }
+
+    public boolean isAgent(){
+        return this.type == Type.AGENT;
+    }
+
+    public Type getType(){
+        return type;
+    }
+
+    public String getLabel(){
+        return label;
     }
 
     @Override

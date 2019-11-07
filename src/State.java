@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Random;
 
 public class State {
@@ -135,14 +134,14 @@ public class State {
 
     void showWorldState() {
         for (Tile[] tiles : world) {
-            Arrays.asList(tiles).forEach(tile -> System.out.print(tile.label));
+            Arrays.asList(tiles).forEach(tile -> System.out.print(tile.getLabel()));
             System.out.println();
         }
     }
 
     void showWorldState(Tile[][] state) {
         for (Tile[] tiles : state) {
-            Arrays.asList(tiles).forEach(tile -> System.out.print(tile.label));
+            Arrays.asList(tiles).forEach(tile -> System.out.print(tile.getLabel()));
             System.out.println();
         }
     }
