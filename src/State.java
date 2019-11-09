@@ -8,6 +8,7 @@ public class State {
     int agentX;
     int agentY;
 
+    //Todo implement world state in this class instead of State
     public State(Tile[][] world, int agentX, int agentY) {
         this.world = cloneWorld(world);
         this.agentX = agentX;
