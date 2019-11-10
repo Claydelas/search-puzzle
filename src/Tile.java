@@ -3,6 +3,7 @@ public class Tile {
     private Type type;
     private String label;
 
+    //generic Tile constructor with predefined label
     public Tile(Type type) {
         if (type == Type.AGENT)
             this.label = "[#]";
@@ -11,6 +12,7 @@ public class Tile {
         this.type = type;
     }
 
+    //Tiles with custom labels
     public Tile(Type type, String label) {
         if (type == Type.AGENT)
             this.label = "[#]";
@@ -21,18 +23,19 @@ public class Tile {
         this.type = type;
     }
 
-    public boolean isAgent(){
+    public boolean isAgent() {
         return this.type == Type.AGENT;
     }
 
-    public Type getType(){
+    public Type getType() {
         return type;
     }
 
-    public String getLabel(){
+    public String getLabel() {
         return label;
     }
 
+    //used for comparing world states, ignores agent pos.
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;

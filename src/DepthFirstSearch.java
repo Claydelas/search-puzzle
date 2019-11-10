@@ -1,13 +1,10 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
-public class BreadthFirstSearch {
+public class DepthFirstSearch {
 
-    public BreadthFirstSearch(Node start, Node goal) {
+    public DepthFirstSearch(Node start, Node goal) {
         int nodesExpanded = 0;
-        Queue<Node> queue = new LinkedList<>();
+        Deque<Node> queue = new ArrayDeque<>();
 
         System.out.println("Starting state:");
         start.printWorld();
@@ -16,7 +13,7 @@ public class BreadthFirstSearch {
         while (!queue.isEmpty()) {
             ArrayList<Node> successors = new ArrayList<>();
 
-            Node current = queue.remove();
+            Node current = queue.removeLast();
 
             //checks if @goal state, and if so, breaks the loop -> prints path.
             if (Arrays.deepEquals(current.getWorld(), goal.getWorld())) {
@@ -27,7 +24,7 @@ public class BreadthFirstSearch {
                     step.printWorld();
                 }
 
-                System.out.println("Breadth-First search found solution on depth: ["
+                System.out.println("Depth-First search found solution on depth: ["
                         + current.getLevel() + "] with [" + nodesExpanded + "] nodes expanded:");
                 current.printWorld();
                 break;
@@ -38,6 +35,9 @@ public class BreadthFirstSearch {
             successors.add(current.moveLeft());
             successors.add(current.moveDown());
             successors.add(current.moveRight());
+
+            //randomises expansion order
+            Collections.shuffle(successors);
 
             //adds successors to the queue
             queue.addAll(successors);

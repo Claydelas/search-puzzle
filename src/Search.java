@@ -6,9 +6,11 @@ public class Search {
     }
 
     public static void main(String[] args) {
-        State start = new State(4, 4, xy(3, 3), xy(3, 0), xy(3, 1), xy(3, 2));
-        State goal = new State(4, 4, xy(3, 3), xy(3, 1), xy(3, 2), xy(3, 3));
-        new BreadthFirstSearch(new Node(start), goal);
+        Node start = new Node(4, 4, xy(3, 3), xy(3, 0), xy(3, 1), xy(3, 2));
+        //Node goal = new Node(4, 4, xy(3, 3), xy(3, 1), xy(3, 2), xy(3, 3));
+        Node goal = new Node(4, 4, xy(3, 3), xy(3, 0), xy(3, 1), xy(3, 3));
+        //new BreadthFirstSearch(start, goal);
+        new DepthFirstSearch(start, goal);
     }
 
 }
