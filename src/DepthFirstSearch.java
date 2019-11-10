@@ -14,6 +14,10 @@ public class DepthFirstSearch {
             ArrayList<Node> successors = new ArrayList<>();
 
             Node current = queue.removeLast();
+            //frees up memory, since the nodes that remain to be expanded after popping
+            //the last one can never be reached. depth-first search on the blocksworld
+            //puzzle goes down a single branch until either a solution is found or out of memory
+            queue.clear();
 
             //checks if @goal state, and if so, breaks the loop -> prints path.
             if (Arrays.deepEquals(current.getWorld(), goal.getWorld())) {
@@ -31,10 +35,15 @@ public class DepthFirstSearch {
             }
             //expands current node
             nodesExpanded++;
-            successors.add(current.moveUp());
-            successors.add(current.moveLeft());
-            successors.add(current.moveDown());
-            successors.add(current.moveRight());
+            Node temp;
+            temp = current.moveUp();
+            if(current != temp) successors.add(temp);
+            temp = current.moveLeft();
+            if(current != temp) successors.add(temp);
+            temp = current.moveDown();
+            if(current != temp) successors.add(temp);
+            temp = current.moveRight();
+            if(current != temp) successors.add(temp);
 
             //randomises expansion order
             Collections.shuffle(successors);

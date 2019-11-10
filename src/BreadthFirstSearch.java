@@ -34,10 +34,15 @@ public class BreadthFirstSearch {
             }
             //expands current node
             nodesExpanded++;
-            successors.add(current.moveUp());
-            successors.add(current.moveLeft());
-            successors.add(current.moveDown());
-            successors.add(current.moveRight());
+            Node temp;
+            temp = current.moveUp();
+            if(current != temp) successors.add(temp);
+            temp = current.moveLeft();
+            if(current != temp) successors.add(temp);
+            temp = current.moveDown();
+            if(current != temp) successors.add(temp);
+            temp = current.moveRight();
+            if(current != temp) successors.add(temp);
 
             //adds successors to the queue
             queue.addAll(successors);
