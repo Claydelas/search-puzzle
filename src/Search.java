@@ -8,12 +8,29 @@ public class Search {
     }
 
     public static void main(String[] args) {
+
         Node start = new Node(4, 4, xy(3, 3), xy(3, 0), xy(3, 1), xy(3, 2));
-        Node goal = new Node(4, 4, xy(0, 0), xy(3, 1), xy(3, 2), xy(3, 3));
-        //Node goal = new Node(4, 4, xy(0, 0), xy(3, 1), xy(2, 1), xy(1, 1));
-        //Node goal = new Node(4, 4, xy(3, 3), xy(3, 0), xy(3, 1), xy(3, 3));
-        bfs(start, goal, false);
-        dfs(start, goal, false);
+        Node goal = new Node(start, xy(3, 1), xy(3, 2), xy(3, 3));
+        //bfs(start, goal, false);
+
+        Node startBlocked = new Node(4, 4, xy(3, 3), new long[]{xy(0, 0), xy(0, 1), (xy(0, 2)), (xy(0, 3)), xy(1, 0), xy(1, 1), xy(1, 2), xy(1, 3), xy(2, 0), xy(2, 1), xy(2, 2), xy(2, 3)}, xy(3, 0), xy(3, 1), xy(3, 2));
+        Node goalBlocked = new Node(startBlocked, xy(3, 1), xy(3, 2), xy(3, 3));
+
+        Node goalSpec = new Node(start, xy(1, 1), xy(2, 1), xy(3, 1));
+        //bfs(startBlocked, goalBlocked, false);
+
+        List<Node> results = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            results.add(dfs(start, goalSpec, false));
+        }
+        System.out.println(results.stream()
+                .mapToInt(Node::getCost)
+                .summaryStatistics());
+        //bfs(start, goalSpec, false);
+    }
+
+    public static Node ids(Node start, Node goal, boolean details) {
+        return null;
     }
 
     public static Node dfs(Node start, Node goal, boolean details) {
@@ -73,7 +90,7 @@ public class Search {
     public static boolean isAtGoalState(Node current, Node goal, int nodesExpanded, boolean details) {
         if (Arrays.deepEquals(current.getWorld(), goal.getWorld())) {
             printSolution(current, details);
-            switch (Thread.currentThread().getStackTrace()[2].getMethodName()){
+            switch (Thread.currentThread().getStackTrace()[2].getMethodName()) {
                 case "bfs":
                     System.out.print("Breadth-First");
                     break;

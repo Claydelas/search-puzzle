@@ -5,13 +5,29 @@ import java.util.Random;
 
 public class Node {
 
-    Tile[][] world;
-    int agentX;
-    int agentY;
+    private Tile[][] world;
+    private int agentX;
+    private int agentY;
     private int level;
     private int cost;
     private String lastStep;
     private Node parent;
+
+    //goal state constructor
+    public Node(Node start, long... blocks) {
+        this.world = cloneWorld(start.world);
+        for (int i = 0; i < world.length; i++) {
+            for (int j = 0; j < world[i].length; j++) {
+                if (world[i][j].getType() == Tile.Type.AGENT || world[i][j].getType() == Tile.Type.BLOCK)
+                    world[i][j] = new Tile(Tile.Type.EMPTY_TILE);
+            }
+        }
+        char name = 'A';
+        for (long l : blocks) {
+            world[x(l)][y(l)] = new Tile(Tile.Type.BLOCK, String.valueOf(name));
+            name++;
+        }
+    }
 
     //extensible root Node from parameters
     public Node(int row, int col, long agentPos, long... blocks) {
@@ -27,17 +43,23 @@ public class Node {
             world[x(l)][y(l)] = new Tile(Tile.Type.BLOCK, String.valueOf(name));
             name++;
         }
-        this.parent = null;
-        this.level = 0;
-        this.cost = 0;
     }
 
-    //root Node from existing world config
-    public Node(Tile[][] world) {
-        this.world = world;
-        this.parent = null;
-        this.level = 0;
-        this.cost = 0;
+    public Node(int row, int col, long agentPos, long[] blocked, long... blocks) {
+        world = new Tile[row][col];
+        for (Tile[] tiles : world) Arrays.fill(tiles, new Tile(Tile.Type.EMPTY_TILE));
+
+        this.agentX = x(agentPos);
+        this.agentY = y(agentPos);
+        world[agentX][agentY] = new Tile(Tile.Type.AGENT);
+
+        for (long l : blocked) world[x(l)][y(l)] = new Tile(Tile.Type.BLOCKED_TILE);
+
+        char name = 'A';
+        for (long l : blocks) {
+            world[x(l)][y(l)] = new Tile(Tile.Type.BLOCK, String.valueOf(name));
+            name++;
+        }
     }
 
     public Node(Tile[][] world, Node parent, long agentPos, String lastStep) {
@@ -81,8 +103,8 @@ public class Node {
         return null;
     }
 
-    Node moveLeft() {
-        if (agentY - 1 >= 0) {
+    private Node moveLeft() {
+        if (agentY - 1 >= 0 && !world[agentX][agentY - 1].isBlocked()) {
             Tile[][] world = cloneWorld(this.world);
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX][agentY - 1];
@@ -92,8 +114,8 @@ public class Node {
         return this;
     }
 
-    Node moveRight() {
-        if (agentY + 1 < world[agentX].length) {
+    private Node moveRight() {
+        if (agentY + 1 < world[agentX].length && !world[agentX][agentY + 1].isBlocked()) {
             Tile[][] world = cloneWorld(this.world);
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX][agentY + 1];
@@ -103,8 +125,8 @@ public class Node {
         return this;
     }
 
-    Node moveDown() {
-        if (agentX + 1 < world[agentY].length) {
+    private Node moveDown() {
+        if (agentX + 1 < world[agentY].length && !world[agentX + 1][agentY].isBlocked()) {
             Tile[][] world = cloneWorld(this.world);
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX + 1][agentY];
@@ -114,8 +136,8 @@ public class Node {
         return this;
     }
 
-    Node moveUp() {
-        if (agentX - 1 >= 0) {
+    private Node moveUp() {
+        if (agentX - 1 >= 0 && !world[agentX - 1][agentY].isBlocked()) {
             Tile[][] world = cloneWorld(this.world);
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX - 1][agentY];
@@ -165,10 +187,11 @@ public class Node {
 
     public ArrayList<Node> getPossibleMoves() {
         ArrayList<Node> moves = new ArrayList<>();
-        moves.add(this.moveUp());
-        moves.add(this.moveLeft());
-        moves.add(this.moveDown());
-        moves.add(this.moveRight());
+        Node temp;
+        if ((temp = this.moveUp()) != this) moves.add(temp);
+        if ((temp = this.moveLeft()) != this) moves.add(temp);
+        if ((temp = this.moveDown()) != this) moves.add(temp);
+        if ((temp = this.moveRight()) != this) moves.add(temp);
         return moves;
     }
 }

@@ -3,28 +3,36 @@ public class Tile {
     private Type type;
     private String label;
 
-    //generic Tile constructor with predefined label
+    //generic Tile constructor
     public Tile(Type type) {
-        if (type == Type.AGENT)
-            this.label = "[#]";
-        if (type == Type.EMPTY_TILE)
-            this.label = "[ ]";
-        this.type = type;
+        this(type,"null");
     }
 
-    //Tiles with custom labels
+    //BLOCK constructor
     public Tile(Type type, String label) {
-        if (type == Type.AGENT)
-            this.label = "[#]";
-        if (type == Type.EMPTY_TILE)
-            this.label = "[ ]";
-        else
-            this.label = "[" + label + "]";
+        switch (type) {
+            case AGENT:
+                this.label = "[\u263A]";
+                break;
+            case EMPTY_TILE:
+                this.label = "[ ]";
+                break;
+            case BLOCKED_TILE:
+                this.label = "[\u2717]";
+                break;
+            case BLOCK:
+                this.label = "[" + label + "]";
+                break;
+        }
         this.type = type;
     }
 
     public boolean isAgent() {
         return this.type == Type.AGENT;
+    }
+
+    public boolean isBlocked() {
+        return this.type == Type.BLOCKED_TILE;
     }
 
     public Type getType() {
@@ -50,5 +58,6 @@ public class Tile {
         AGENT,
         EMPTY_TILE,
         BLOCK,
+        BLOCKED_TILE
     }
 }
