@@ -11,7 +11,6 @@ public class DepthFirstSearch {
 
         queue.add(start);
         while (!queue.isEmpty()) {
-            ArrayList<Node> successors = new ArrayList<>();
 
             Node current = queue.removeLast();
             //frees up memory, since the nodes that remain to be expanded after popping
@@ -35,15 +34,8 @@ public class DepthFirstSearch {
             }
             //expands current node
             nodesExpanded++;
-            Node temp;
-            temp = current.moveUp();
-            if(current != temp) successors.add(temp);
-            temp = current.moveLeft();
-            if(current != temp) successors.add(temp);
-            temp = current.moveDown();
-            if(current != temp) successors.add(temp);
-            temp = current.moveRight();
-            if(current != temp) successors.add(temp);
+
+            ArrayList<Node> successors = current.getPossibleMoves();
 
             //randomises expansion order
             Collections.shuffle(successors);

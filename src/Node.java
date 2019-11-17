@@ -6,7 +6,6 @@ import java.util.Random;
 public class Node {
 
     Tile[][] world;
-    Tile agent;
     int agentX;
     int agentY;
     private int level;
@@ -21,8 +20,7 @@ public class Node {
 
         this.agentX = x(agentPos);
         this.agentY = y(agentPos);
-        agent = new Tile(Tile.Type.AGENT);
-        world[agentX][agentY] = agent;
+        world[agentX][agentY] = new Tile(Tile.Type.AGENT);
 
         char name = 'A';
         for (long l : blocks) {
@@ -42,15 +40,14 @@ public class Node {
         this.cost = 0;
     }
 
-    //helper constructor for generating successors via movement
-    public Node(Tile[][] world, Node parent, int level, int cost, long agentPos, String lastStep) {
+    public Node(Tile[][] world, Node parent, long agentPos, String lastStep) {
+        this.world = world;
+        this.lastStep = lastStep;
+        this.level = parent.getLevel() + 1;
+        this.cost = parent.getCost() + 1;
+        this.parent = parent;
         this.agentX = x(agentPos);
         this.agentY = y(agentPos);
-        this.world = world;
-        this.parent = parent;
-        this.level = level;
-        this.cost = cost;
-        this.lastStep = lastStep;
     }
 
     private static long xy(int x, int y) {
@@ -85,71 +82,47 @@ public class Node {
     }
 
     Node moveLeft() {
-        Tile[][] world = cloneWorld(this.world);
-        //System.out.print("+left");
         if (agentY - 1 >= 0) {
+            Tile[][] world = cloneWorld(this.world);
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX][agentY - 1];
             world[agentX][agentY - 1] = oldAgentPos;
-            return new Node(world, this, level + 1, cost + 1, xy(agentX, agentY - 1), "+left");
-            //System.out.println();
-        } else {
-            //System.out.println(" => out of bounds!");
-            //showWorldState();
-            return this;
+            return new Node(world, this, xy(agentX, agentY - 1), "+left");
         }
-        //showWorldState(world);
+        return this;
     }
 
     Node moveRight() {
-        Tile[][] world = cloneWorld(this.world);
-        //System.out.print("+right");
         if (agentY + 1 < world[agentX].length) {
+            Tile[][] world = cloneWorld(this.world);
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX][agentY + 1];
             world[agentX][agentY + 1] = oldAgentPos;
-            return new Node(world, this, level + 1, cost + 1, xy(agentX, agentY + 1), "+right");
-            //System.out.println();
-        } else {
-            //System.out.println(" => out of bounds!");
-            //showWorldState();
-            return this;
+            return new Node(world, this, xy(agentX, agentY + 1), "+right");
         }
-        //showWorldState(world);
+        return this;
     }
 
     Node moveDown() {
-        Tile[][] world = cloneWorld(this.world);
-        //System.out.print("+down");
         if (agentX + 1 < world[agentY].length) {
+            Tile[][] world = cloneWorld(this.world);
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX + 1][agentY];
             world[agentX + 1][agentY] = oldAgentPos;
-            return new Node(world, this, level + 1, cost + 1, xy(agentX + 1, agentY), "+down");
-            //System.out.println();
-        } else {
-            //System.out.println(" => out of bounds!");
-            //showWorldState();
-            return this;
+            return new Node(world, this, xy(agentX + 1, agentY), "+down");
         }
-        //showWorldState(world);
+        return this;
     }
 
     Node moveUp() {
-        Tile[][] world = cloneWorld(this.world);
-        //System.out.print("+up");
         if (agentX - 1 >= 0) {
+            Tile[][] world = cloneWorld(this.world);
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX - 1][agentY];
             world[agentX - 1][agentY] = oldAgentPos;
-            return new Node(world, this, level + 1, cost + 1, xy(agentX - 1, agentY), "+up");
-            //System.out.println();
-        } else {
-            //System.out.println(" => out of bounds!");
-            //showWorldState();
-            return this;
+            return new Node(world, this, xy(agentX - 1, agentY), "+up");
         }
-        //showWorldState(world);
+        return this;
     }
 
     void printWorld() {
@@ -159,7 +132,7 @@ public class Node {
         }
     }
 
-    Tile[][] cloneWorld(Tile[][] world) {
+    private Tile[][] cloneWorld(Tile[][] world) {
         return Arrays.stream(world).map(Tile[]::clone).toArray(Tile[][]::new);
     }
 
@@ -190,4 +163,12 @@ public class Node {
         return sequence;
     }
 
+    public ArrayList<Node> getPossibleMoves() {
+        ArrayList<Node> moves = new ArrayList<>();
+        moves.add(this.moveUp());
+        moves.add(this.moveLeft());
+        moves.add(this.moveDown());
+        moves.add(this.moveRight());
+        return moves;
+    }
 }
