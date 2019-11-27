@@ -90,17 +90,24 @@ public class Node {
 
     Node moveRandom() {
         int nextMove = new Random().nextInt(4);
-        switch (nextMove) {
-            case 0:
-                return moveUp();
-            case 1:
-                return moveDown();
-            case 2:
-                return moveLeft();
-            case 3:
-                return moveRight();
+        Node temp;
+        if (lastStep != null) {
+            switch (nextMove) {
+                case 0:
+                    if ((temp = this.moveUp()) != this && !lastStep.equals("DOWN"))
+                        return temp;
+                case 1:
+                    if ((temp = this.moveDown()) != this && !lastStep.equals("UP"))
+                        return temp;
+                case 2:
+                    if ((temp = this.moveLeft()) != this && !lastStep.equals("RIGHT"))
+                        return temp;
+                case 3:
+                    if ((temp = this.moveRight()) != this && !lastStep.equals("LEFT"))
+                        return temp;
+            }
         }
-        return null;
+        return moveLeft();
     }
 
     private Node moveLeft() {
@@ -109,7 +116,7 @@ public class Node {
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX][agentY - 1];
             world[agentX][agentY - 1] = oldAgentPos;
-            return new Node(world, this, xy(agentX, agentY - 1), "+left");
+            return new Node(world, this, xy(agentX, agentY - 1), "LEFT");
         }
         return this;
     }
@@ -120,7 +127,7 @@ public class Node {
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX][agentY + 1];
             world[agentX][agentY + 1] = oldAgentPos;
-            return new Node(world, this, xy(agentX, agentY + 1), "+right");
+            return new Node(world, this, xy(agentX, agentY + 1), "RIGHT");
         }
         return this;
     }
@@ -131,7 +138,7 @@ public class Node {
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX + 1][agentY];
             world[agentX + 1][agentY] = oldAgentPos;
-            return new Node(world, this, xy(agentX + 1, agentY), "+down");
+            return new Node(world, this, xy(agentX + 1, agentY), "DOWN");
         }
         return this;
     }
@@ -142,7 +149,7 @@ public class Node {
             Tile oldAgentPos = world[agentX][agentY];
             world[agentX][agentY] = world[agentX - 1][agentY];
             world[agentX - 1][agentY] = oldAgentPos;
-            return new Node(world, this, xy(agentX - 1, agentY), "+up");
+            return new Node(world, this, xy(agentX - 1, agentY), "UP");
         }
         return this;
     }
