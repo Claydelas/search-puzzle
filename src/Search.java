@@ -1,7 +1,7 @@
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Search {
 
@@ -9,43 +9,21 @@ public class Search {
         return (((long) x) << 32) | y;
     }
 
-    private static int x(long xy) {
-        return (int) (xy >> 32);
-    }
-
-    private static int y(long xy) {
-        return (int) xy;
-    }
-
     public static void main(String[] args) throws FileNotFoundException {
 
-        //--------Spec-------
+        //--------Spec-------------------
         Node start = new Node(4, 4, xy(3, 3), xy(3, 0), xy(3, 1), xy(3, 2));
         Node goalSpec = new Node(start, xy(1, 1), xy(2, 1), xy(3, 1));
-
-        //runSpecTests(start, goalSpec, 1);
-        //runTests(start, 5, 1);
-        //ids(start, goalSpec, 1);
-        aStar(start,goalSpec, 1);
-
-        //-------------------
-
-
-        Node startBlocked = new Node(4, 4, xy(3, 3), new long[]{xy(0, 0), xy(0, 1), (xy(0, 2)), (xy(0, 3)), xy(1, 0), xy(1, 1), xy(1, 2), xy(1, 3), xy(2, 0), xy(2, 1), xy(2, 2), xy(2, 3)}, xy(3, 0), xy(3, 1), xy(3, 2));
-        Node goalBlocked = new Node(startBlocked, xy(3, 1), xy(3, 2), xy(3, 3));
+        runSpecTests(start, goalSpec, 1);
+        runTestsNormal(start, 13, 1);
+        //--------/w Blocked Tiles-------
+        Node startBlocked = new Node(4, 4, xy(3, 3), new long[]{xy(0, 1), (xy(1, 3))}, xy(3, 0), xy(3, 1), xy(3, 2));
+        runTestsBlocked(startBlocked, 14, 1);
+        //--------NxN Grid---------------
+        runTestsNGrid(6, 3, 1);
     }
 
-    public static void averageDFS(Node start, Node goal, int iterations) {
-        List<Node> results = new ArrayList<>();
-        for (int i = 0; i < iterations; i++) {
-            results.add(dfs(start, goal, 0));
-        }
-        System.out.println(results.stream()
-                .mapToInt(Node::getCost)
-                .summaryStatistics());
-    }
-
-    public static Node ids(Node start, Node goal, int detailsLevel) {
+    private static Node ids(Node start, Node goal, int detailsLevel) {
         int nodesExpanded = 0;
         int nodesGenerated = 0;
         int depthLimit = 0;
@@ -76,7 +54,7 @@ public class Search {
         return null;
     }
 
-    public static Node aStar(Node start, Node goal, int detailsLevel) {
+    private static Node aStar(Node start, Node goal, int detailsLevel) {
         int nodesExpanded = 0;
         int nodesGenerated = 0;
         Queue<Node> priorityQueue = new PriorityQueue<>();
@@ -99,7 +77,7 @@ public class Search {
         return null;
     }
 
-    public static Node dfs(Node start, Node goal, int detailsLevel) {
+    private static Map dfs(Node start, Node goal, int detailsLevel) {
         int nodesExpanded = 0;
         int nodesGenerated = 0;
         Deque<Node> stack = new ArrayDeque<>();
@@ -113,7 +91,8 @@ public class Search {
             stack.clear();
 
             //checks if @goal state, and if so, breaks the loop -> prints path.
-            if (isAtGoalState(current, goal, nodesExpanded, nodesGenerated, detailsLevel)) return current;
+            if (isAtGoalState(current, goal, nodesExpanded, nodesGenerated, detailsLevel))
+                return Map.of(current, nodesGenerated);
 
             nodesExpanded++;
             ArrayList<Node> successors = current.getPossibleMoves();
@@ -127,7 +106,7 @@ public class Search {
         return null;
     }
 
-    public static Node bfs(Node start, Node goal, int detailsLevel) {
+    private static Node bfs(Node start, Node goal, int detailsLevel) {
         int nodesExpanded = 0;
         int nodesGenerated = 0;
         Queue<Node> queue = new LinkedList<>();
@@ -148,7 +127,7 @@ public class Search {
         return null;
     }
 
-    public static boolean isAtGoalState(Node current, Node goal, int nodesExpanded, int nodesGenerated, int detailsLevel) {
+    private static boolean isAtGoalState(Node current, Node goal, int nodesExpanded, int nodesGenerated, int detailsLevel) {
         if (Arrays.deepEquals(current.getWorld(), goal.getWorld())) {
             if (detailsLevel != 0) {
                 switch (Thread.currentThread().getStackTrace()[2].getMethodName()) {
@@ -179,7 +158,7 @@ public class Search {
         return false;
     }
 
-    public static void printSolution(Node current, boolean details) {
+    private static void printSolution(Node current, boolean details) {
         System.out.print("Path -> ");
         for (Node step : current.getPath()) {
             System.out.print(step.getLastMove() + " ");
@@ -191,39 +170,78 @@ public class Search {
         System.out.println();
     }
 
-    public static Node generateDifficulty(Node start, int difficulty) {
+    private static void averageDFS(Node start, Node goal, int iterations) {
+        List<Integer> results = new ArrayList<>();
+        for (int i = 0; i < iterations; i++) {
+            results.addAll(dfs(start, goal, 1).values());
+        }
+        System.out.println(results.stream().mapToInt(Integer::intValue).summaryStatistics());
+    }
+
+    private static Node generateDifficulty(Node start, int difficulty) {
         Node temp = start;
         for (int i = 0; i < difficulty; i++) {
             temp = temp.moveRandom();
         }
-        if (bfs(start, temp, 0).getLevel() != difficulty)
+        if (aStar(start, temp, 0).getLevel() != difficulty)
             return generateDifficulty(start, difficulty);
         return temp;
     }
 
-    private static void runTests(Node start, int maxDifficulty, int detailsLevel) throws FileNotFoundException {
-        System.setOut(new PrintStream("./results/extra/bfs.txt"));
-        for (int i = 1; i <= maxDifficulty; i++) {
-            System.out.println("Difficulty " + i);
-            bfs(start, generateDifficulty(start, i), detailsLevel);
-            System.out.println();
+    private static void runTestsNormal(Node start, int maxDifficulty, int detailsLevel) throws FileNotFoundException {
+        PrintStream bfs = new PrintStream("./results/extra/bfs.txt");
+        PrintStream dfs = new PrintStream("./results/extra/dfs.txt");
+        PrintStream ids = new PrintStream("./results/extra/ids.txt");
+        PrintStream aStar = new PrintStream("./results/extra/aStar.txt");
+
+        runTests(start, maxDifficulty, detailsLevel, bfs, dfs, ids, aStar);
+    }
+
+    private static void runTestsBlocked(Node start, int maxDifficulty, int detailsLevel) throws FileNotFoundException {
+        PrintStream bfs = new PrintStream("./results/extra/blocked/bfs.txt");
+        PrintStream dfs = new PrintStream("./results/extra/blocked/dfs.txt");
+        PrintStream ids = new PrintStream("./results/extra/blocked/ids.txt");
+        PrintStream aStar = new PrintStream("./results/extra/blocked/aStar.txt");
+
+        runTests(start, maxDifficulty, detailsLevel, bfs, dfs, ids, aStar);
+    }
+
+    private static void runTestsNGrid(int upToN, int maxDifficulty, int detailsLevel) throws FileNotFoundException {
+        PrintStream bfs = new PrintStream(new FileOutputStream("./results/extra/largerGrid/bfs.txt", true));
+        PrintStream dfs = new PrintStream(new FileOutputStream("./results/extra/largerGrid/dfs.txt", true));
+        PrintStream ids = new PrintStream(new FileOutputStream("./results/extra/largerGrid/ids.txt", true));
+        PrintStream aStar = new PrintStream(new FileOutputStream("./results/extra/largerGrid/aStar.txt", true));
+
+        for (int i = 5; i <= upToN; i++) {
+            Node start = new Node(i, i, xy(3, 3), xy(3, 0), xy(3, 1), xy(3, 2));
+            runTests(start, maxDifficulty, detailsLevel, bfs, dfs, ids, aStar);
         }
-        System.setOut(new PrintStream("./results/extra/dfs.txt"));
+    }
+
+    private static void runTests(Node start, int maxDifficulty, int detailsLevel,
+                                 PrintStream bfs, PrintStream dfs, PrintStream ids, PrintStream aStar) {
         for (int i = 1; i <= maxDifficulty; i++) {
+
+            Node goal = generateDifficulty(start, i);
+
+            System.setOut(bfs);
             System.out.println("Difficulty " + i);
-            dfs(start, generateDifficulty(start, i), detailsLevel);
+            bfs(start, goal, detailsLevel);
             System.out.println();
-        }
-        System.setOut(new PrintStream("./results/extra/ids.txt"));
-        for (int i = 1; i <= maxDifficulty; i++) {
+
+            System.setOut(dfs);
             System.out.println("Difficulty " + i);
-            ids(start, generateDifficulty(start, i), detailsLevel);
+            dfs(start, goal, detailsLevel);
             System.out.println();
-        }
-        System.setOut(new PrintStream("./results/extra/aStar.txt"));
-        for (int i = 1; i <= maxDifficulty; i++) {
+
+            System.setOut(ids);
             System.out.println("Difficulty " + i);
-            aStar(start, generateDifficulty(start, i), detailsLevel);
+            ids(start, goal, detailsLevel);
+            System.out.println();
+
+            System.setOut(aStar);
+            System.out.println("Difficulty " + i);
+            aStar(start, goal, detailsLevel);
             System.out.println();
         }
     }
@@ -233,7 +251,7 @@ public class Search {
         bfs(start, goal, detailsLevel);
         System.gc();
         System.setOut(new PrintStream("./results/spec/dfs.txt"));
-        dfs(start, goal, detailsLevel);
+        averageDFS(start, goal, 50);
         System.gc();
         System.setOut(new PrintStream("./results/spec/ids.txt"));
         ids(start, goal, detailsLevel);
