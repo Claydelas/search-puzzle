@@ -1,11 +1,20 @@
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Search {
 
     private static long xy(int x, int y) {
         return (((long) x) << 32) | y;
+    }
+
+    private static int x(long xy) {
+        return (int) (xy >> 32);
+    }
+
+    private static int y(long xy) {
+        return (int) xy;
     }
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -16,7 +25,8 @@ public class Search {
 
         //runSpecTests(start, goalSpec, 1);
         //runTests(start, 5, 1);
-        ids(start, goalSpec, 1);
+        //ids(start, goalSpec, 1);
+        aStar(start,goalSpec, 1);
 
         //-------------------
 
@@ -44,7 +54,7 @@ public class Search {
         stack.add(start);
         while (!stack.isEmpty()) {
             Node current = stack.removeLast();
-            
+
             //checks if @goal state, and if so, breaks the loop -> prints path.
             if (isAtGoalState(current, goal, nodesExpanded, nodesGenerated, detailsLevel)) return current;
 
@@ -67,6 +77,25 @@ public class Search {
     }
 
     public static Node aStar(Node start, Node goal, int detailsLevel) {
+        int nodesExpanded = 0;
+        int nodesGenerated = 0;
+        Queue<Node> priorityQueue = new PriorityQueue<>();
+
+        priorityQueue.add(start);
+        while (!priorityQueue.isEmpty()) {
+            Node current = priorityQueue.remove();
+
+            //checks if @goal state, and if so, breaks the loop -> prints path.
+            if (isAtGoalState(current, goal, nodesExpanded, nodesGenerated, detailsLevel)) return current;
+
+            nodesExpanded++;
+            ArrayList<Node> successors = current.getPossibleMoves();
+            nodesGenerated += successors.size();
+
+            successors.forEach(node -> node.heuristic(goal));
+
+            priorityQueue.addAll(successors);
+        }
         return null;
     }
 

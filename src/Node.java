@@ -1,9 +1,6 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
-public class Node {
+public class Node implements Comparable {
 
     private Tile[][] world;
     private int agentX;
@@ -200,5 +197,37 @@ public class Node {
         if ((temp = this.moveDown()) != this) moves.add(temp);
         if ((temp = this.moveRight()) != this) moves.add(temp);
         return moves;
+    }
+
+    public void heuristic(Node goal) {
+        HashMap<String, Long> startMap = new HashMap<>();
+        for (int x = 0; x < this.getWorld().length; x++) {
+            for (int y = 0; y < this.getWorld()[x].length; y++) {
+                if (this.getWorld()[x][y].getType().equals(Tile.Type.BLOCK))
+                    startMap.put(this.getWorld()[x][y].getLabel(), xy(x, y));
+            }
+        }
+        HashMap<String, Long> goalMap = new HashMap<>();
+        for (int x = 0; x < goal.getWorld().length; x++) {
+            for (int y = 0; y < goal.getWorld()[x].length; y++) {
+                if (goal.getWorld()[x][y].getType().equals(Tile.Type.BLOCK))
+                    goalMap.put(goal.getWorld()[x][y].getLabel(), xy(x, y));
+            }
+        }
+        int cost = 0;
+        for (Map.Entry<String, Long> entry : startMap.entrySet()) {
+            //calculates the absolute distance from each Tile to the goal state
+            cost += (Math.abs(x(entry.getValue()) - x(goalMap.get(entry.getKey()))) + Math.abs(y(entry.getValue()) - y(goalMap.get(entry.getKey()))));
+            //ensures that nodes further up in the tree are explored first
+            cost += level;
+            //adjust the global cost variable for the node
+            this.cost = cost;
+        }
+    }
+
+    @Override
+    public int compareTo(Object n) {
+        Node tmp = (Node) n;
+        return this.getCost() - tmp.getCost();
     }
 }
